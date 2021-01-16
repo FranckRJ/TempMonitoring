@@ -121,9 +121,12 @@ void setup() {
 void loop() {
   const float temp = glob::Dht.readTemperature(false, true);
   if (isnan(temp)) {
+    setErrorMode(true);
+    delay(100);
     deepSleepFor8s();
     return;
   }
+
   const String request = "GET " + conf::WebServerRequestUrl + String(temp) + "°C HTTP/1.1\r\nHost: " + conf::ConnectionHost + "\r\n\r\n";
 
   if (!sendRequest(request)) {
