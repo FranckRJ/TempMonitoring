@@ -2,11 +2,11 @@
 #include <DHT.h>
 #include <LowPower.h>
 
-#include "conf.h"
+#include "conf.hpp"
 
 namespace glob
 {
-  DHT Dht = DHT(conf::DhtPin, DHT22);
+  DHT Dht = DHT(Conf::DhtPin, DHT22);
   HardwareSerial& Serial = ::Serial;
 }
 
@@ -68,7 +68,7 @@ bool resetEsp() {
 
 
 bool connectToWifi(){
-  if (!sendCommand("AT+CWJAP=\"" + conf::WifiAccessName + "\",\"" + conf::WifiPassword + "\"", 20, "OK")) {
+  if (!sendCommand("AT+CWJAP=\"" + Conf::WifiAccessName + "\",\"" + Conf::WifiPassword + "\"", 20, "OK")) {
     return false;
   }
 
@@ -76,7 +76,7 @@ bool connectToWifi(){
 }
 
 bool sendRequest(const String& request) {
-  if (!sendCommand("AT+CIPSTART=\"TCP\",\"" + conf::ConnectionHost + "\"," + conf::ConnectionPort, 15, "OK")) {
+  if (!sendCommand("AT+CIPSTART=\"TCP\",\"" + Conf::ConnectionHost + "\"," + Conf::ConnectionPort, 15, "OK")) {
     return false;
   }
 
@@ -127,7 +127,7 @@ void loop() {
     return;
   }
 
-  const String request = "GET " + conf::WebServerRequestUrl + String(temp) + "°C HTTP/1.1\r\nHost: " + conf::ConnectionHost + "\r\n\r\n";
+  const String request = "GET " + Conf::WebServerRequestUrl + String(temp) + "°C HTTP/1.1\r\nHost: " + Conf::ConnectionHost + "\r\n\r\n";
 
   if (!sendRequest(request)) {
     if (reconnectToWifi()) {
