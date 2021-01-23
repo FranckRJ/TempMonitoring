@@ -3,6 +3,7 @@ import os
 import sqlite3
 import datetime as dt
 import pandas as pd
+import plotly.express as px
 
 DB_FILE_PATH = "data.db"
 
@@ -56,7 +57,16 @@ def add_temp_measure():
     return ""
 
 
+@app.route("/temp")
+def show_temp():
+    config = dict({'showTips': False})
+
+    df = _build_df_temp_measures(1)
+    df_filled = _add_nan_to_holes_in_measure(df)
+
+    fig = px.line(df_filled, x="timestamp", y="value")
+    return fig.to_html(config=config)
+
+
 if __name__ == '__main__':
-    # df = _build_df_temp_measures(1)
-    # df_filled = _add_nan_to_holes_in_measure(df)
     app.run()

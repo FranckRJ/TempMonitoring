@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 Flask = "1.1.2"
 pandas = "1.2.1"
+plotly = "4.14.3"
 
 [requires]
 python_version = "3.7"
