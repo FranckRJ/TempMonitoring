@@ -1,14 +1,25 @@
 from flask import Flask, request
+import os
 import sqlite3
 import datetime as dt
 import pandas as pd
+
+DB_FILE_PATH = "data.db"
 
 app = Flask(__name__)
 
 
 def _open_db_conn():
-    conn = sqlite3.connect("data.db")
+    is_new_db = not os.path.exists(DB_FILE_PATH)
+
+    conn = sqlite3.connect(DB_FILE_PATH)
     conn.execute("PRAGMA foreign_keys = ON")
+
+    if is_new_db:
+        with open("data.sql") as schema:
+            conn.executescript(schema.read())
+            conn.commit()
+
     return conn
 
 
