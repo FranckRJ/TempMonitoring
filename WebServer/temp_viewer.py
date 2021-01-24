@@ -4,7 +4,7 @@ import plotly.express as px
 
 class TempViewer:
     def __init__(self, temp_data: TempData) -> None:
-        self.plotly_config = dict({'showTips': False})
+        self.plotly_config = dict({"showTips": False, "displaylogo": False})
         self.temp_plot_cache = {}
         self.temp_data = temp_data
         pass
@@ -21,5 +21,5 @@ class TempViewer:
     def notify_temp_data_update(self, room_id: int) -> None:
         temp_measures = self.temp_data.get_room_temp_measures(room_id)
 
-        fig = px.line(temp_measures, x="timestamp", y="value")
+        fig = px.line(temp_measures, x="timestamp", y="value", labels={"timestamp": "date", "value": "temp (°C)"})
         self.temp_plot_cache[room_id] = fig.to_html(config=self.plotly_config)
