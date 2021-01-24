@@ -44,7 +44,7 @@ void loop()
         return;
     }
 
-    const String form = "room_id=1&value=" + String(temp);
+    const String form = "value=" + String(temp);
 
     String request;
     request.concat("POST ");

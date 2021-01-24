@@ -10,11 +10,10 @@ temp_data = TempData(DB_FILE_PATH)
 temp_viewer = TempViewer(temp_data)
 
 
-@app.route("/api/temp", methods=["POST"])
-def add_temp_measure():
+@app.route("/api/rooms/<int:room_id>/temps", methods=["POST"])
+def add_temp_measure(room_id: int):
     now_dt = dt.datetime.today()
     value = float(request.form["value"])
-    room_id = int(request.form["room_id"])
 
     temp_data.add_temp_measure(now_dt, value, room_id)
     temp_viewer.notify_temp_data_update(room_id)
@@ -22,9 +21,9 @@ def add_temp_measure():
     return ""
 
 
-@app.route("/temp")
-def show_temp():
-    return temp_viewer.get_full_html_temp_plot(1)
+@app.route("/rooms/<int:room_id>/temps/all")
+def show_temp(room_id: int):
+    return temp_viewer.get_full_html_temp_plot(room_id)
 
 
 if __name__ == '__main__':

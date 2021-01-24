@@ -11,7 +11,7 @@ struct DefaultConf
     static inline const String connectionHost = "YOUR_HOST";
     static inline const String connectionPort = "YOUR_PORT";
 
-    static inline const String webServerRequestUrl = "YOUR_REQUEST_URL";
+    static inline const String webServerRequestUrl = "/api/rooms/<int:room_id>/temps";
 
     static inline const int dhtPin = 4;
     static inline const int dhtType = DHT22;
