@@ -44,7 +44,20 @@ void loop()
         return;
     }
 
-    const String request = "GET " + Conf::webServerRequestUrl + String(temp) + "°C HTTP/1.1\r\nHost: " + Conf::connectionHost + "\r\n\r\n";
+    const String form = "room_id=1&value=" + String(temp);
+
+    String request;
+    request.concat("POST ");
+    request.concat(Conf::webServerRequestUrl);
+    request.concat(" HTTP/1.1\r\n");
+    request.concat("Host: ");
+    request.concat(Conf::connectionHost);
+    request.concat("\r\n");
+    request.concat("Content-Type: application/x-www-form-urlencoded\r\n");
+    request.concat("Content-Length: ");
+    request.concat(String(form.length()));
+    request.concat("\r\n\r\n");
+    request.concat(form);
 
     glob::espAtCmdWrapper.sendRequestWithResetIfFail(request, Conf::connectionHost, Conf::connectionPort, 2);
 
