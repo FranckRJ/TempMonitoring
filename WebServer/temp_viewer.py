@@ -20,6 +20,9 @@ class TempViewer:
 
     def notify_temp_data_update(self, room_id: int) -> None:
         temp_measures = self.temp_data.get_room_temp_measures(room_id)
+        last_temp = temp_measures["value"].iloc[-1]
 
-        fig = px.line(temp_measures, x="timestamp", y="value", labels={"timestamp": "date", "value": "temp (°C)"})
+        fig = px.line(temp_measures, x="timestamp", y="value",
+                      labels={"timestamp": "Date", "value": "Température (°C)"},
+                      title=f"Toutes les températures (actuellement : {last_temp}°C)")
         self.temp_plot_cache[room_id] = fig.to_html(config=self.plotly_config)
