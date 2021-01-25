@@ -1,9 +1,11 @@
+#include <Arduino.h>
 #include <SoftwareSerial.h>
 #include <DHT.h>
 #include <LowPower.h>
 
 #include "Conf.hpp"
 #include "EspAtCmdWrapper.hpp"
+#include "HttpRequestBuilder.hpp"
 
 namespace glob
 {
@@ -45,19 +47,7 @@ void loop()
     }
 
     const String form = "value=" + String(temp);
-
-    String request;
-    request.concat("POST ");
-    request.concat(Conf::webServerRequestUrl);
-    request.concat(" HTTP/1.1\r\n");
-    request.concat("Host: ");
-    request.concat(Conf::connectionHost);
-    request.concat("\r\n");
-    request.concat("Content-Type: application/x-www-form-urlencoded\r\n");
-    request.concat("Content-Length: ");
-    request.concat(String(form.length()));
-    request.concat("\r\n\r\n");
-    request.concat(form);
+    const String request = HttpRequestBuilder::postForm(Conf::webServerRequestUrl, Conf::connectionHost, form);
 
     glob::espAtCmdWrapper.sendRequestWithResetIfFail(request, Conf::connectionHost, Conf::connectionPort, 2);
 
