@@ -15,15 +15,20 @@ def add_temp_measure(room_id: int):
     now_dt = dt.datetime.today()
     value = float(request.form["value"])
 
-    temp_data.add_temp_measure(now_dt, value, room_id)
-    temp_viewer.notify_temp_data_update(room_id)
+    temp_data.add_temp(now_dt, value, room_id)
+    temp_viewer.notify_temp_data_updated(room_id)
 
     return ""
 
 
 @app.route("/rooms/<int:room_id>/temps/all")
-def show_temp(room_id: int):
-    return temp_viewer.get_full_html_temp_plot(room_id)
+def show_all_temps(room_id: int):
+    return temp_viewer.get_full_temp_plot(room_id)
+
+
+@app.route("/rooms/<int:room_id>/temps/lastweek")
+def show_last_week_temps(room_id: int):
+    return temp_viewer.get_last_week_temp_plot(room_id)
 
 
 if __name__ == '__main__':

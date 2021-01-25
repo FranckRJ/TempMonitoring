@@ -2,13 +2,14 @@ import sqlite3
 import os
 import datetime as dt
 import pandas as pd
+from typing import Tuple
 
 
 class TempData:
     def __init__(self, db_file_path: str) -> None:
         self.db_file_path = db_file_path
 
-    def add_temp_measure(self, timestamp: dt.datetime, value: float, room_id: int) -> None:
+    def add_temp(self, timestamp: dt.datetime, value: float, room_id: int) -> None:
         with self._open_db_conn() as conn:
             curs = conn.cursor()
 
@@ -16,11 +17,15 @@ class TempData:
                          (timestamp, value, room_id))
             conn.commit()
 
-    def get_room_temp_measures(self, room_id: int) -> pd.DataFrame:
-        temp_measures = self._build_df_temp_measures(room_id)
-        temp_measures_filled = self._add_nan_to_holes_in_measure(temp_measures)
+    def get_room_temps(self, room_id: int, since: dt.datetime = None) -> pd.DataFrame:
+        if since is None:
+            temps = self._build_full_temps_df(room_id)
+        else:
+            temps = self._build_recent_temps_df(room_id, since)
 
-        return temp_measures_filled
+        temps_filled = self._add_nan_to_holes_in_measure(temps)
+
+        return temps_filled
 
     def _open_db_conn(self) -> sqlite3.Connection:
         is_new_db = not os.path.exists(self.db_file_path)
@@ -35,12 +40,21 @@ class TempData:
 
         return conn
 
-    def _build_df_temp_measures(self, room_id: int) -> pd.DataFrame:
+    def _build_temps_df_from_query(self, query: str, params: Tuple) -> pd.DataFrame:
         with self._open_db_conn() as conn:
-            temp_measures = pd.read_sql_query("SELECT timestamp, value FROM temp_measures WHERE room_id = ?", conn,
-                                              params=(room_id,), parse_dates="timestamp")
+            temp_measures = pd.read_sql_query(query, conn, params=params, parse_dates="timestamp")
             temp_measures.sort_index(inplace=True)
             return temp_measures
+
+    def _build_full_temps_df(self, room_id: int) -> pd.DataFrame:
+        return self._build_temps_df_from_query("SELECT timestamp, value FROM temp_measures WHERE room_id = ?",
+                                               (room_id,))
+
+    def _build_recent_temps_df(self, room_id: int, since: dt.datetime) -> pd.DataFrame:
+        return self._build_temps_df_from_query(
+            "SELECT timestamp, value FROM temp_measures WHERE room_id = ? AND timestamp >= ?",
+            (room_id, since)
+        )
 
     @staticmethod
     def _add_nan_to_holes_in_measure(temp_measures: pd.DataFrame) -> pd.DataFrame:
