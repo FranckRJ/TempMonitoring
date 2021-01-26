@@ -1,18 +1,24 @@
 #include "EspAtCmdWrapper.hpp"
 
-EspAtCmdWrapper::EspAtCmdWrapper(int errorLedPin, Stream& espSerial, const String& wifiAccessName, const String& wifiPassword)
-    : _errorLedPin{errorLedPin}, _espSerial{espSerial}, _wifiAccessName{wifiAccessName}, _wifiPassword{wifiPassword}
+EspAtCmdWrapper::EspAtCmdWrapper(int powerPin, int errorLedPin, Stream& espSerial, const String& wifiAccessName, const String& wifiPassword)
+    : _powerPin{powerPin}, _errorLedPin{errorLedPin}, _espSerial{espSerial}, _wifiAccessName{wifiAccessName}, _wifiPassword{wifiPassword}
 {
 }
 
 bool EspAtCmdWrapper::begin()
 {
+    if (_powerPin >= 0)
+    {
+        pinMode(_powerPin, OUTPUT);
+        digitalWrite(_powerPin, HIGH);
+    }
+
     return reconnectToWifi();
 }
 
 bool EspAtCmdWrapper::sendRequest(const String& request, const String& host, const String& port)
 {
-    if (!sendCommand("AT+CIPSTART=\"TCP\",\"" + host + "\"," + port, 15, "OK"))
+    if (!sendCommand("AT+CIPSTART=\"TCP\",\"" + host + "\"," + port, 10, "OK"))
     {
         return false;
     }
@@ -42,6 +48,14 @@ bool EspAtCmdWrapper::sendRequestWithResetIfFail(const String& request, const St
         }
 
         reconnectToWifi();
+    }
+}
+
+void EspAtCmdWrapper::shutdown()
+{
+    if (_powerPin >= 0)
+    {
+        digitalWrite(_powerPin, LOW);
     }
 }
 
@@ -97,7 +111,7 @@ bool EspAtCmdWrapper::sendResetCmd()
 
 bool EspAtCmdWrapper::sendConnectToWifiCmd()
 {
-    if (!sendCommand("AT+CWJAP=\"" + _wifiAccessName + "\",\"" + _wifiPassword + "\"", 20, "OK"))
+    if (!sendCommand("AT+CWJAP=\"" + _wifiAccessName + "\",\"" + _wifiPassword + "\"", 15, "OK"))
     {
         return false;
     }

@@ -13,6 +13,8 @@ struct DefaultConf
 
     static inline const String webServerRequestUrl = "/api/rooms/<int:room_id>/temps";
 
+    static inline const int espPowerPin = 7;
+
     static inline const int dhtPin = 4;
     static inline const int dhtType = DHT22;
 };

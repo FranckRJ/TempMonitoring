@@ -6,13 +6,15 @@
 class EspAtCmdWrapper
 {
 public:
-    explicit EspAtCmdWrapper(int errorLedPin, Stream& espSerial, const String& wifiAccessName, const String& wifiPassword);
+    explicit EspAtCmdWrapper(int powerPin, int errorLedPin, Stream& espSerial, const String& wifiAccessName, const String& wifiPassword);
 
     bool begin();
 
     bool sendRequest(const String& request, const String& host, const String& port);
 
     bool sendRequestWithResetIfFail(const String& request, const String& host, const String& port, int maxTries = 1);
+
+    void shutdown();
 
 private:
     bool reconnectToWifi();
@@ -28,6 +30,7 @@ private:
     void setErrorMode(bool val);
 
 private:
+    int _powerPin;
     int _errorLedPin;
     Stream& _espSerial;
     String _wifiAccessName;

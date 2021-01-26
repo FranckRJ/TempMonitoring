@@ -10,7 +10,7 @@
 namespace glob
 {
     DHT dht{Conf::dhtPin, Conf::dhtType};
-    EspAtCmdWrapper espAtCmdWrapper{LED_BUILTIN, Serial, Conf::wifiAccessName, Conf::wifiPassword};
+    EspAtCmdWrapper espAtCmdWrapper{Conf::espPowerPin, LED_BUILTIN, Serial, Conf::wifiAccessName, Conf::wifiPassword};
 } // namespace glob
 
 void deepSleepFor8s(int times = 1)
@@ -51,6 +51,8 @@ void loop()
 
     glob::espAtCmdWrapper.sendRequestWithResetIfFail(request, Conf::connectionHost, Conf::connectionPort, 2);
 
+    glob::espAtCmdWrapper.shutdown();
     delay(100);
     deepSleepFor8s(112);
+    glob::espAtCmdWrapper.begin();
 }
