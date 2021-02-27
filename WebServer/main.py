@@ -1,12 +1,16 @@
+import datetime as dt
+
 from flask import Flask, request
+
+from db_access import DbAccess
 from temp_data import TempData
 from temp_viewer import TempViewer
-import datetime as dt
 
 DB_FILE_PATH = "data.db"
 
 app = Flask(__name__)
-temp_data = TempData(DB_FILE_PATH)
+db_access = DbAccess(DB_FILE_PATH)
+temp_data = TempData(db_access)
 temp_viewer = TempViewer(temp_data)
 
 
