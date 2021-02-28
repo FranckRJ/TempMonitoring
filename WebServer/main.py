@@ -1,8 +1,10 @@
 import datetime as dt
 
-from flask import Flask, request
+from flask import Flask, request, render_template
 
 from db_access import DbAccess
+from room_data import RoomData
+from room_viewer import RoomViewer
 from temp_data import TempData
 from temp_viewer import TempViewer
 
@@ -10,6 +12,8 @@ DB_FILE_PATH = "data.db"
 
 app = Flask(__name__)
 db_access = DbAccess(DB_FILE_PATH)
+room_data = RoomData(db_access)
+room_viewer = RoomViewer(room_data, render_template)
 temp_data = TempData(db_access)
 temp_viewer = TempViewer(temp_data)
 
@@ -23,6 +27,11 @@ def add_temp_measure(room_id: int):
     temp_viewer.notify_temp_data_updated(room_id)
 
     return ""
+
+
+@app.route("/rooms/")
+def show_all_rooms():
+    return room_viewer.get_all_rooms_page()
 
 
 @app.route("/rooms/<int:room_id>/temps/all")

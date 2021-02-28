@@ -1,5 +1,4 @@
 import datetime as dt
-from typing import Tuple
 
 import pandas as pd
 
@@ -28,7 +27,7 @@ class TempData:
 
         return temps_filled
 
-    def __build_temps_df_from_query(self, query: str, params: Tuple) -> pd.DataFrame:
+    def __build_temps_df_from_query(self, query: str, params: tuple) -> pd.DataFrame:
         with self.__db_access.open_db_conn() as conn:
             temp_measures = pd.read_sql_query(query, conn, params=params, parse_dates="timestamp")
             temp_measures.sort_index(inplace=True)

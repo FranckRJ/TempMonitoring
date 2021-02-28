@@ -1,0 +1,10 @@
+<!doctype html>
+<html>
+<body>
+<ul>
+    {% for room in rooms %}
+        <li><a href="{{ room.id }}">{{ room.name }}</a></li>
+    {% endfor %}
+</ul>
+</body>
+</html>
