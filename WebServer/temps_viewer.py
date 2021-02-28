@@ -3,11 +3,11 @@ import datetime as dt
 import pandas as pd
 import plotly.express as px
 
-from temp_data import TempData
+from temps_data import TempsData
 
 
-class TempViewer:
-    def __init__(self, temp_data: TempData) -> None:
+class TempsViewer:
+    def __init__(self, temp_data: TempsData) -> None:
         self.__plotly_config = dict({"showTips": False, "displaylogo": False})
         self.__full_temp_plot_cache = {}
         self.__last_week_temp_plot_cache = {}

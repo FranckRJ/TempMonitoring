@@ -3,19 +3,19 @@ import datetime as dt
 from flask import Flask, request, render_template
 
 from db_access import DbAccess
-from room_data import RoomData
-from room_viewer import RoomViewer
-from temp_data import TempData
-from temp_viewer import TempViewer
+from rooms_data import RoomsData
+from rooms_viewer import RoomsViewer
+from temps_data import TempsData
+from temps_viewer import TempsViewer
 
 DB_FILE_PATH = "data.db"
 
 app = Flask(__name__)
 db_access = DbAccess(DB_FILE_PATH)
-room_data = RoomData(db_access)
-room_viewer = RoomViewer(room_data, render_template)
-temp_data = TempData(db_access)
-temp_viewer = TempViewer(temp_data)
+room_data = RoomsData(db_access)
+room_viewer = RoomsViewer(room_data, render_template)
+temp_data = TempsData(db_access)
+temp_viewer = TempsViewer(temp_data)
 
 
 @app.route("/api/rooms/<int:room_id>/temps", methods=["POST"])

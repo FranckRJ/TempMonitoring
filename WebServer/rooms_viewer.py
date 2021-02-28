@@ -1,10 +1,10 @@
 from typing import Callable
 
-from room_data import RoomData
+from rooms_data import RoomsData
 
 
-class RoomViewer:
-    def __init__(self, room_data: RoomData, render_template: Callable[..., str]) -> None:
+class RoomsViewer:
+    def __init__(self, room_data: RoomsData, render_template: Callable[..., str]) -> None:
         self.__room_data = room_data
         self.__render_template = render_template
 

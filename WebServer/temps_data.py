@@ -5,7 +5,7 @@ import pandas as pd
 from db_access import DbAccess
 
 
-class TempData:
+class TempsData:
     def __init__(self, db_access: DbAccess) -> None:
         self.__db_access = db_access
 
