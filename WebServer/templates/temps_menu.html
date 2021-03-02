@@ -1,0 +1,6 @@
+{% extends "base_menu.html" %}
+{% block title %}Températures de: {{ room_name }}{% endblock %}
+{% block entries %}
+    <a href="all" class="collection-item">Toutes les températures</a>
+    <a href="lastweek" class="collection-item">Températures de la semaine dernière</a>
+{% endblock %}

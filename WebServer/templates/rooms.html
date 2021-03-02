@@ -1,9 +1,0 @@
-{% extends "base.html" %}
-{% block title %}Pièces{% endblock %}
-{% block body %}
-    <div class="collection">
-        {% for room in rooms %}
-            <a href="{{ room.id }}" class="collection-item">{{ room.name }}</a>
-        {% endfor %}
-    </div>
-{% endblock %}

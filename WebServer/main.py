@@ -34,6 +34,16 @@ def show_all_rooms():
     return room_viewer.get_all_rooms_page()
 
 
+@app.route("/rooms/<int:room_id>/")
+def show_room(room_id: int):
+    return room_viewer.get_room_page(room_id)
+
+
+@app.route("/rooms/<int:room_id>/temps/")
+def show_room_temps_menu(room_id: int):
+    return room_viewer.get_room_temps_menu_page(room_id)
+
+
 @app.route("/rooms/<int:room_id>/temps/all")
 def show_all_temps(room_id: int):
     return temp_viewer.get_full_temp_plot(room_id)
