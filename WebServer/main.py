@@ -15,7 +15,7 @@ db_access = DbAccess(DB_FILE_PATH)
 room_data = RoomsData(db_access)
 room_viewer = RoomsViewer(room_data, render_template)
 temp_data = TempsData(db_access)
-temp_viewer = TempsViewer(temp_data)
+temp_viewer = TempsViewer(temp_data, render_template)
 
 
 @app.route("/api/rooms/<int:room_id>/temps", methods=["POST"])

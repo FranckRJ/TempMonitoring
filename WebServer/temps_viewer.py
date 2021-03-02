@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import Callable
 
 import pandas as pd
 import plotly.express as px
@@ -7,11 +8,12 @@ from temps_data import TempsData
 
 
 class TempsViewer:
-    def __init__(self, temp_data: TempsData) -> None:
-        self.__plotly_config = dict({"showTips": False, "displaylogo": False})
+    def __init__(self, temp_data: TempsData, render_template: Callable[..., str]) -> None:
+        self.__plotly_config = dict({"showTips": False, "displaylogo": False, "responsive": True})
         self.__full_temp_plot_cache = {}
         self.__last_week_temp_plot_cache = {}
         self.__temp_data = temp_data
+        self.__render_template = render_template
         pass
 
     def get_full_temp_plot(self, room_id: int) -> str:
@@ -21,7 +23,7 @@ class TempsViewer:
             self.__rebuild_full_temp_plot_cache(room_id)
             html = self.__full_temp_plot_cache[room_id]
 
-        return html
+        return self.__render_template("temps.html", html_plot=html)
 
     def get_last_week_temp_plot(self, room_id: int) -> str:
         now_dt = dt.datetime.today()
@@ -31,7 +33,7 @@ class TempsViewer:
             self.__rebuild_last_week_temp_plot_cache(room_id)
             timestamped_html = self.__last_week_temp_plot_cache[room_id]
 
-        return timestamped_html[1]
+        return self.__render_template("temps.html", html_plot=timestamped_html[1])
 
     def notify_temp_data_updated(self, room_id: int) -> None:
         self.__rebuild_full_temp_plot_cache(room_id)
@@ -44,7 +46,7 @@ class TempsViewer:
                       labels={"timestamp": "Date", "value": "Température (°C)"},
                       title=title.format(last_temp=last_temp))
 
-        return fig.to_html(config=self.__plotly_config)
+        return fig.to_html(config=self.__plotly_config, full_html=False)
 
     def __rebuild_full_temp_plot_cache(self, room_id: int) -> None:
         temps = self.__temp_data.get_room_temps(room_id)
