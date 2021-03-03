@@ -1,0 +1,7 @@
+{% extends "base_menu.html" %}
+{% block title %}Utilisateurs{% endblock %}
+{% block entries %}
+    {% for user in users %}
+        <a href="{{ url_for("show_user", user_id=user.id) }}" class="collection-item">{{ user.name }}</a>
+    {% endfor %}
+{% endblock %}

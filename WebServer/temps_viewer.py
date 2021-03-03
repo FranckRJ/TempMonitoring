@@ -8,11 +8,11 @@ from temps_data import TempsData
 
 
 class TempsViewer:
-    def __init__(self, temp_data: TempsData, render_template: Callable[..., str]) -> None:
+    def __init__(self, temps_data: TempsData, render_template: Callable[..., str]) -> None:
         self.__plotly_config = dict({"showTips": False, "displaylogo": False, "responsive": True})
         self.__full_temp_plot_cache = {}
         self.__last_week_temp_plot_cache = {}
-        self.__temp_data = temp_data
+        self.__temps_data = temps_data
         self.__render_template = render_template
         pass
 
@@ -49,12 +49,12 @@ class TempsViewer:
         return fig.to_html(config=self.__plotly_config, full_html=False)
 
     def __rebuild_full_temp_plot_cache(self, room_id: int) -> None:
-        temps = self.__temp_data.get_room_temps(room_id)
+        temps = self.__temps_data.get_room_temps(room_id)
         title = "Toutes les températures (actuellement : {last_temp}°C)"
         self.__full_temp_plot_cache[room_id] = self.__build_temp_plot_from_df(temps, title)
 
     def __rebuild_last_week_temp_plot_cache(self, room_id: int) -> None:
         now_dt = dt.datetime.today()
-        temps = self.__temp_data.get_room_temps(room_id, since=now_dt - dt.timedelta(days=7))
+        temps = self.__temps_data.get_room_temps(room_id, since=now_dt - dt.timedelta(days=7))
         title = "Températures de la semaine (actuellement : {last_temp}°C)"
         self.__last_week_temp_plot_cache[room_id] = (now_dt, self.__build_temp_plot_from_df(temps, title))
