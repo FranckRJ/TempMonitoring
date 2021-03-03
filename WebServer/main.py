@@ -19,7 +19,7 @@ home_viewer = HomeViewer(render_template)
 users_data = UsersData(db_access)
 users_viewer = UsersViewer(users_data, render_template)
 rooms_data = RoomsData(db_access)
-rooms_viewer = RoomsViewer(rooms_data, render_template)
+rooms_viewer = RoomsViewer(users_data, rooms_data, render_template)
 temps_data = TempsData(db_access)
 temps_viewer = TempsViewer(temps_data, render_template)
 
@@ -47,7 +47,12 @@ def show_all_users():
 
 @app.route("/users/<int:user_id>/")
 def show_user(user_id: int):
-    return "users_viewer.get_user_page()"
+    return users_viewer.get_user_page(user_id)
+
+
+@app.route("/users/<int:user_id>/rooms/")
+def show_user_rooms(user_id: int):
+    return rooms_viewer.get_user_rooms_page(user_id)
 
 
 @app.route("/rooms/")

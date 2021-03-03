@@ -21,3 +21,12 @@ class UsersData:
             curs.execute("SELECT id, name FROM users")
 
             return [User(id=resp[0], name=resp[1]) for resp in curs.fetchall()]
+
+    def get_user(self, user_id: int) -> User:
+        with self.__db_access.open_db_conn() as conn:
+            curs = conn.cursor()
+
+            curs.execute("SELECT id, name FROM users WHERE id = ?", (user_id,))
+            resp = curs.fetchone()
+
+            return User(id=resp[0], name=resp[1])

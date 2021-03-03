@@ -1,0 +1,7 @@
+{% extends "base_menu.html" %}
+{% block title %}Pièces de: {{ user.name }}{% endblock %}
+{% block entries %}
+    {% for room in rooms %}
+        <a href="{{ url_for("show_room", room_id=room.id) }}" class="collection-item">{{ room.name }}</a>
+    {% endfor %}
+{% endblock %}
