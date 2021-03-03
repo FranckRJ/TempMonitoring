@@ -22,10 +22,11 @@ class RoomsData:
 
             return [Room(id=resp[0], name=resp[1]) for resp in curs.fetchall()]
 
-    def get_room_name(self, room_id: int):
+    def get_room(self, room_id: int):
         with self.__db_access.open_db_conn() as conn:
             curs = conn.cursor()
 
-            curs.execute("SELECT name FROM rooms WHERE id = ?", (room_id,))
+            curs.execute("SELECT id, name FROM rooms WHERE id = ?", (room_id,))
+            resp = curs.fetchone()
 
-            return curs.fetchone()[0]
+            return Room(id=resp[0], name=resp[1])

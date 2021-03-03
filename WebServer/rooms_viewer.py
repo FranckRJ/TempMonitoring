@@ -13,9 +13,9 @@ class RoomsViewer:
         return self.__render_template("all_rooms.html", rooms=rooms)
 
     def get_room_page(self, room_id: int):
-        room_name = self.__room_data.get_room_name(room_id)
-        return self.__render_template("room.html", room_name=room_name)
+        room = self.__room_data.get_room(room_id)
+        return self.__render_template("room.html", room=room)
 
     def get_room_temps_menu_page(self, room_id: int):
-        room_name = self.__room_data.get_room_name(room_id)
-        return self.__render_template("temps_menu.html", room_name=room_name)
+        room = self.__room_data.get_room(room_id)
+        return self.__render_template("temps_menu.html", room=room)

@@ -1,5 +1,5 @@
 {% extends "base_menu.html" %}
 {% block title %}Accueil{% endblock %}
 {% block entries %}
-    <a href="rooms" class="collection-item">Pièces</a>
+    <a href="{{ url_for("show_all_rooms") }}" class="collection-item">Pièces</a>
 {% endblock %}

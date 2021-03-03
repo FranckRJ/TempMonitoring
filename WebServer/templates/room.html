@@ -1,5 +1,5 @@
 {% extends "base_menu.html" %}
-{% block title %}Pièce: {{ room_name }}{% endblock %}
+{% block title %}Pièce: {{ room.name }}{% endblock %}
 {% block entries %}
-    <a href="temps" class="collection-item">Températures</a>
+    <a href="{{ url_for("show_room_temps_menu", room_id=room.id) }}" class="collection-item">Températures</a>
 {% endblock %}
