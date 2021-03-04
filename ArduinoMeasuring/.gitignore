@@ -1,1 +1,9 @@
-/_Conf.hpp
+/.pio/
+/.idea/
+/build*/
+/cmake-build*/
+
+CMakeLists.txt
+CMakeListsPrivate.txt
+
+/include/_Conf.hpp
