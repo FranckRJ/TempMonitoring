@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <SoftwareSerial.h>
 #include <DHT.h>
 #include <LowPower.h>
 
