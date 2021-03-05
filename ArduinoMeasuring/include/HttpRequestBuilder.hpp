@@ -1,7 +1,7 @@
 #ifndef HTTP_REQUEST_BUILDER_HPP
 #define HTTP_REQUEST_BUILDER_HPP
 
-#include <Arduino.h>
+#include <WString.h>
 
 class HttpRequestBuilder
 {

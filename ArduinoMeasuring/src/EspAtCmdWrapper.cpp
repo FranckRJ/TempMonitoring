@@ -1,9 +1,15 @@
 #include "EspAtCmdWrapper.hpp"
 
-EspAtCmdWrapper::EspAtCmdWrapper(int powerPin, int errorLedPin, Stream& espSerial, const String& wifiAccessName, const String& wifiPassword)
-    : _powerPin{powerPin}, _errorLedPin{errorLedPin}, _espSerial{espSerial}, _wifiAccessName{wifiAccessName}, _wifiPassword{wifiPassword}
-{
-}
+#include <Arduino.h>
+
+EspAtCmdWrapper::EspAtCmdWrapper(
+    int powerPin, int errorLedPin, Stream& espSerial, const String& wifiAccessName, const String& wifiPassword)
+    : _powerPin{powerPin}
+    , _errorLedPin{errorLedPin}
+    , _espSerial{espSerial}
+    , _wifiAccessName{wifiAccessName}
+    , _wifiPassword{wifiPassword}
+{}
 
 bool EspAtCmdWrapper::begin()
 {
@@ -38,7 +44,10 @@ bool EspAtCmdWrapper::sendRequest(const String& request, const String& host, con
     return true;
 }
 
-bool EspAtCmdWrapper::sendRequestWithResetIfFail(const String& request, const String& host, const String& port, int maxTries = 1)
+bool EspAtCmdWrapper::sendRequestWithResetIfFail(const String& request,
+                                                 const String& host,
+                                                 const String& port,
+                                                 int maxTries = 1)
 {
     for (int i = 0; i < maxTries; ++i)
     {

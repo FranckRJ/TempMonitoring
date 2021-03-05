@@ -1,12 +1,14 @@
 #ifndef ESP_AT_CMD_WRAPPER_HPP
 #define ESP_AT_CMD_WRAPPER_HPP
 
-#include <Arduino.h>
+#include <Stream.h>
+#include <WString.h>
 
 class EspAtCmdWrapper
 {
 public:
-    explicit EspAtCmdWrapper(int powerPin, int errorLedPin, Stream& espSerial, const String& wifiAccessName, const String& wifiPassword);
+    explicit EspAtCmdWrapper(
+        int powerPin, int errorLedPin, Stream& espSerial, const String& wifiAccessName, const String& wifiPassword);
 
     bool begin();
 
