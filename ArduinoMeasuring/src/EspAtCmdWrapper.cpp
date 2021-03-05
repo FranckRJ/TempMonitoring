@@ -24,7 +24,7 @@ bool EspAtCmdWrapper::begin()
 
 bool EspAtCmdWrapper::sendRequest(const String& request, const String& host, const String& port)
 {
-    if (!sendCommand("AT+CIPSTART=\"TCP\",\"" + host + "\"," + port, 10, "OK"))
+    if (!sendCommand(R"(AT+CIPSTART="TCP",")" + host + "\"," + port, 10, "OK"))
     {
         return false;
     }
@@ -47,7 +47,7 @@ bool EspAtCmdWrapper::sendRequest(const String& request, const String& host, con
 bool EspAtCmdWrapper::sendRequestWithResetIfFail(const String& request,
                                                  const String& host,
                                                  const String& port,
-                                                 int maxTries = 1)
+                                                 int maxTries)
 {
     for (int i = 0; i < maxTries; ++i)
     {
