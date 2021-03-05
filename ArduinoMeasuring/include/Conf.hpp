@@ -1,32 +1,10 @@
 #ifndef CONF_HPP
 #define CONF_HPP
 
-#include <DHT.h>
-
-struct DefaultConf
-{
-    static inline const String wifiAccessName = "YOUR_ACCESS_NAME";
-    static inline const String wifiPassword = "YOUR_PASSWORD";
-
-    static inline const String connectionHost = "YOUR_HOST";
-    static inline const String connectionPort = "YOUR_PORT";
-
-    static inline const String webServerRequestUrl = "/api/rooms/<int:room_id>/temps";
-
-    static inline const int espPowerPin = 7;
-
-    static inline const int dhtPin = 4;
-    static inline const int dhtType = DHT22;
-};
-
-#if __has_include("_Conf.hpp")
-#include "_Conf.hpp"
-#else
-
-struct Conf : public DefaultConf
-{
-};
-
-#endif // __has_include("_Conf.hpp")
+#if __has_include("PrivateConf.hpp")
+#include "PrivateConf.hpp"
+#else // __has_include("PrivateConf.hpp")
+#include "DefaultConf.hpp."
+#endif // __has_include("PrivateConf.hpp")
 
 #endif // CONF_HPP

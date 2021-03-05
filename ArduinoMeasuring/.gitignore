@@ -6,4 +6,4 @@
 CMakeLists.txt
 CMakeListsPrivate.txt
 
-/include/_Conf.hpp
+/include/PrivateConf.hpp
