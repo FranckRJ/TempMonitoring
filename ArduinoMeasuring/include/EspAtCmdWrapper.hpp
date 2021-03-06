@@ -8,7 +8,7 @@ class EspAtCmdWrapper
 {
 public:
     explicit EspAtCmdWrapper(
-        int powerPin, int errorLedPin, Stream& espSerial, const String& wifiAccessName, const String& wifiPassword);
+        int powerPin, int errorLedPin, Stream& espSerial, String wifiAccessName, String wifiPassword);
 
     bool begin();
 
@@ -27,16 +27,16 @@ private:
 
     bool sendConnectToWifiCmd();
 
-    bool sendCommand(const String& command, int maxTries, char* expectedResult);
+    bool sendCommand(const String& command, int maxTries, const char* expectedResult);
 
     void setErrorMode(bool val);
 
 private:
-    int _powerPin;
-    int _errorLedPin;
+    const int _powerPin;
+    const int _errorLedPin;
     Stream& _espSerial;
-    String _wifiAccessName;
-    String _wifiPassword;
+    const String _wifiAccessName;
+    const String _wifiPassword;
 };
 
 #endif // ESP_AT_CMD_WRAPPER_HPP

@@ -1,14 +1,15 @@
 #include "EspAtCmdWrapper.hpp"
 
 #include <Arduino.h>
+#include <etl/utility.h>
 
 EspAtCmdWrapper::EspAtCmdWrapper(
-    int powerPin, int errorLedPin, Stream& espSerial, const String& wifiAccessName, const String& wifiPassword)
+    int powerPin, int errorLedPin, Stream& espSerial, String wifiAccessName, String wifiPassword)
     : _powerPin{powerPin}
     , _errorLedPin{errorLedPin}
     , _espSerial{espSerial}
-    , _wifiAccessName{wifiAccessName}
-    , _wifiPassword{wifiPassword}
+    , _wifiAccessName{etl::move(wifiAccessName)}
+    , _wifiPassword{etl::move(wifiPassword)}
 {}
 
 bool EspAtCmdWrapper::begin()
@@ -58,6 +59,8 @@ bool EspAtCmdWrapper::sendRequestWithResetIfFail(const String& request,
 
         reconnectToWifi();
     }
+
+    return false;
 }
 
 void EspAtCmdWrapper::shutdown()
@@ -128,14 +131,14 @@ bool EspAtCmdWrapper::sendConnectToWifiCmd()
     return true;
 }
 
-bool EspAtCmdWrapper::sendCommand(const String& command, int maxTries, char* expectedResult)
+bool EspAtCmdWrapper::sendCommand(const String& command, int maxTries, const char* expectedResult)
 {
     int triesCount = 0;
 
     while (triesCount < maxTries)
     {
         _espSerial.println(command);
-        if (_espSerial.find(expectedResult))
+        if (_espSerial.find(const_cast<char*>(expectedResult)))
         {
             setErrorMode(false);
             return true;
