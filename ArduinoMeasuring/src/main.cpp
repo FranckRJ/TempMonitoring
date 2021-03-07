@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <DHT.h>
-#include <LowPower.h>
 #undef min // Pourquoi Arduino, POURQUOI ?????
 #undef max // :'(
 #include <etl/circular_buffer.h>
@@ -8,29 +7,17 @@
 #include "Conf.hpp"
 #include "EspAtCmdWrapper.hpp"
 #include "HttpRequestBuilder.hpp"
+#include "LoopScheduler.hpp"
 
-constexpr int pause8SecDuration = 112;
-constexpr uint32_t pauseSecEstimateOfRealDuration = 976;
+constexpr LoopScheduler::TimeType loopCycleDurationMs = 900'000UL;
 
 namespace glob
 {
     DHT dht{Conf::dhtPin, Conf::dhtType};
     EspAtCmdWrapper espAtCmdWrapper{Conf::espPowerPin, LED_BUILTIN, Serial, Conf::wifiAccessName, Conf::wifiPassword};
     etl::circular_buffer<float, 100> tempBuffer;
+    LoopScheduler loopScheduler{loopCycleDurationMs};
 } // namespace glob
-
-void deepSleepFor8s(int times = 1)
-{
-    int oldClkPr = CLKPR;
-    CLKPR = 0x80;
-    CLKPR = 0x08;
-    for (int i = 0; i < times; ++i)
-    {
-        LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-    }
-    CLKPR = 0x80;
-    CLKPR = oldClkPr;
-}
 
 float getTemp(int tries = 1)
 {
@@ -71,14 +58,14 @@ void setup()
 {
     pinMode(LED_BUILTIN, OUTPUT);
 
-    Serial.begin(115200);
+    Serial.begin(115'200);
     glob::dht.begin();
     glob::espAtCmdWrapper.goToConnectedState();
+    glob::loopScheduler.init();
 }
 
 void loop()
 {
-    const auto loopStartTime = millis();
     const float temp = getTemp(2);
 
     if (isnan(temp))
@@ -100,8 +87,9 @@ void loop()
                     continue;
                 }
 
-                const auto delay = static_cast<int32_t>((pauseSecEstimateOfRealDuration * glob::tempBuffer.size())
-                                                        + (500 + millis() - loopStartTime) / 1000);
+                const auto delay
+                    = static_cast<int32_t>((loopCycleDurationMs * glob::tempBuffer.size())
+                                           + (500 + glob::loopScheduler.currentLoopCycleDuration()) / 1'000);
 
                 if (sendTempRequestToEsp(oldTemp, delay))
                 {
@@ -122,6 +110,6 @@ void loop()
 
     glob::espAtCmdWrapper.goToShutdownState();
     delay(100);
-    deepSleepFor8s(pause8SecDuration);
+    glob::loopScheduler.waitForEndOfLoopCycle();
     glob::espAtCmdWrapper.goToConnectedState();
 }
