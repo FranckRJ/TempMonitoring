@@ -29,6 +29,9 @@ def add_temp_measure(room_id: int):
     now_dt = dt.datetime.today()
     value = float(request.form["value"])
 
+    delay_in_sec = int(request.form.get("delay_in_sec", default="0"))
+    now_dt += dt.timedelta(seconds=delay_in_sec)
+
     temps_data.add_temp(now_dt, value, room_id)
     temps_viewer.notify_temp_data_updated(room_id)
 
