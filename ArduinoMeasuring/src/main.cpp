@@ -27,6 +27,7 @@ void deepSleepFor8s(int times = 1)
 
 void setup()
 {
+    delay(2500);
     pinMode(LED_BUILTIN, OUTPUT);
 
     Serial.begin(115200);

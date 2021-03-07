@@ -113,7 +113,7 @@ bool EspAtCmdWrapper::sendInitCmd()
 
 bool EspAtCmdWrapper::sendResetCmd()
 {
-    if (!sendCommand("AT+RST", 5, "ready"))
+    if (!sendCommand("AT+RST", 15, "ready"))
     {
         return false;
     }
