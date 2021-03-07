@@ -6,21 +6,28 @@
 
 class EspAtCmdWrapper
 {
+private:
+    enum class State
+    {
+        Shutdown,
+        Started,
+        Initialized,
+        Connected,
+    };
+
 public:
     explicit EspAtCmdWrapper(
         int powerPin, int errorLedPin, Stream& espSerial, String wifiAccessName, String wifiPassword);
 
-    bool begin();
+    bool goToStartedState();
+
+    bool goToConnectedState();
 
     bool sendRequest(const String& request, const String& host, const String& port);
 
-    bool sendRequestWithResetIfFail(const String& request, const String& host, const String& port, int maxTries = 1);
-
-    void shutdown();
+    void goToShutdownState();
 
 private:
-    bool reconnectToWifi();
-
     bool sendInitCmd();
 
     bool sendResetCmd();
@@ -37,6 +44,7 @@ private:
     Stream& _espSerial;
     const String _wifiAccessName;
     const String _wifiPassword;
+    State _state = State::Shutdown;
 };
 
 #endif // ESP_AT_CMD_WRAPPER_HPP

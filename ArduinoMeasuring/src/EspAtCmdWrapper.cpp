@@ -3,6 +3,15 @@
 #include <Arduino.h>
 #include <etl/utility.h>
 
+#define SEND_CMD_PROPAGATE_FAILURE(cmd, maxTries, expectedResult)                                                      \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        if (!sendCommand(cmd, maxTries, expectedResult))                                                               \
+        {                                                                                                              \
+            return false;                                                                                              \
+        }                                                                                                              \
+    } while (false)
+
 EspAtCmdWrapper::EspAtCmdWrapper(
     int powerPin, int errorLedPin, Stream& espSerial, String wifiAccessName, String wifiPassword)
     : _powerPin{powerPin}
@@ -12,7 +21,7 @@ EspAtCmdWrapper::EspAtCmdWrapper(
     , _wifiPassword{etl::move(wifiPassword)}
 {}
 
-bool EspAtCmdWrapper::begin()
+bool EspAtCmdWrapper::goToStartedState()
 {
     if (_powerPin >= 0)
     {
@@ -20,113 +29,104 @@ bool EspAtCmdWrapper::begin()
         digitalWrite(_powerPin, HIGH);
     }
 
-    return reconnectToWifi();
+    delay(2500);
+    _state = State::Started;
+
+    return true;
 }
 
-bool EspAtCmdWrapper::sendRequest(const String& request, const String& host, const String& port)
+bool EspAtCmdWrapper::goToConnectedState()
 {
-    if (!sendCommand(R"(AT+CIPSTART="TCP",")" + host + "\"," + port, 10, "OK"))
+    switch (_state)
     {
-        return false;
-    }
+        case State::Shutdown:
+            if (!goToStartedState())
+            {
+                return false;
+            }
 
-    if (!sendCommand("AT+CIPSEND=" + String(request.length()), 4, ">"))
-    {
-        return false;
-    }
+            [[fallthrough]];
+        case State::Started:
+            if (!sendResetCmd())
+            {
+                return false;
+            }
 
-    _espSerial.println(request);
+            if (!sendInitCmd())
+            {
+                return false;
+            }
 
-    if (!sendCommand("AT+CIPCLOSE", 5, "OK"))
-    {
-        return false;
+            [[fallthrough]];
+        case State::Initialized:
+            if (!sendConnectToWifiCmd())
+            {
+                return false;
+            }
+
+            [[fallthrough]];
+        case State::Connected:
+            break;
     }
 
     return true;
 }
 
-bool EspAtCmdWrapper::sendRequestWithResetIfFail(const String& request,
-                                                 const String& host,
-                                                 const String& port,
-                                                 int maxTries)
+bool EspAtCmdWrapper::sendRequest(const String& request, const String& host, const String& port)
 {
-    for (int i = 0; i < maxTries; ++i)
+    if (!goToConnectedState())
     {
-        if (sendRequest(request, host, port))
-        {
-            return true;
-        }
-
-        reconnectToWifi();
+        return false;
     }
 
-    return false;
+    SEND_CMD_PROPAGATE_FAILURE(R"(AT+CIPSTART="TCP",")" + host + "\"," + port, 10, "OK");
+
+    SEND_CMD_PROPAGATE_FAILURE("AT+CIPSEND=" + String(request.length()), 4, ">");
+
+    _espSerial.println(request);
+
+    SEND_CMD_PROPAGATE_FAILURE("AT+CIPCLOSE", 5, "OK");
+
+    return true;
 }
 
-void EspAtCmdWrapper::shutdown()
+void EspAtCmdWrapper::goToShutdownState()
 {
     if (_powerPin >= 0)
     {
         digitalWrite(_powerPin, LOW);
     }
-}
 
-bool EspAtCmdWrapper::reconnectToWifi()
-{
-    if (!sendResetCmd())
-    {
-        return false;
-    }
-
-    if (!sendInitCmd())
-    {
-        return false;
-    }
-
-    if (!sendConnectToWifiCmd())
-    {
-        return false;
-    }
-
-    return true;
+    _state = State::Shutdown;
 }
 
 bool EspAtCmdWrapper::sendInitCmd()
 {
-    if (!sendCommand("AT", 5, "OK"))
-    {
-        return false;
-    }
+    SEND_CMD_PROPAGATE_FAILURE("AT", 5, "OK");
 
-    if (!sendCommand("AT+CIPMUX=0", 5, "OK"))
-    {
-        return false;
-    }
+    SEND_CMD_PROPAGATE_FAILURE("AT+CIPMUX=0", 5, "OK");
 
-    if (!sendCommand("AT+CIPMODE=0", 5, "OK"))
-    {
-        return false;
-    }
+    SEND_CMD_PROPAGATE_FAILURE("AT+CIPMODE=0", 5, "OK");
+
+    _state = State::Initialized;
 
     return true;
 }
 
 bool EspAtCmdWrapper::sendResetCmd()
 {
-    if (!sendCommand("AT+RST", 15, "ready"))
-    {
-        return false;
-    }
+    SEND_CMD_PROPAGATE_FAILURE("AT+RST", 15, "ready");
+
+    _state = State::Started;
 
     return true;
 }
 
 bool EspAtCmdWrapper::sendConnectToWifiCmd()
 {
-    if (!sendCommand("AT+CWJAP=\"" + _wifiAccessName + "\",\"" + _wifiPassword + "\"", 15, "OK"))
-    {
-        return false;
-    }
+    SEND_CMD_PROPAGATE_FAILURE("AT+CWJAP=\"" + _wifiAccessName + "\",\"" + _wifiPassword + "\"", 15, "OK");
+
+    _state = State::Connected;
 
     return true;
 }
@@ -157,4 +157,6 @@ void EspAtCmdWrapper::setErrorMode(bool val)
     {
         digitalWrite(_errorLedPin, val ? HIGH : LOW);
     }
+
+    _state = State::Started;
 }

@@ -27,12 +27,11 @@ void deepSleepFor8s(int times = 1)
 
 void setup()
 {
-    delay(2500);
     pinMode(LED_BUILTIN, OUTPUT);
 
     Serial.begin(115200);
     glob::dht.begin();
-    glob::espAtCmdWrapper.begin();
+    glob::espAtCmdWrapper.goToConnectedState();
 }
 
 void loop()
@@ -49,10 +48,10 @@ void loop()
     const String form = "value=" + String(temp);
     const String request = HttpRequestBuilder::postForm(Conf::webServerRequestUrl, Conf::connectionHost, form);
 
-    glob::espAtCmdWrapper.sendRequestWithResetIfFail(request, Conf::connectionHost, Conf::connectionPort, 2);
+    glob::espAtCmdWrapper.sendRequest(request, Conf::connectionHost, Conf::connectionPort);
 
-    glob::espAtCmdWrapper.shutdown();
+    glob::espAtCmdWrapper.goToShutdownState();
     delay(100);
     deepSleepFor8s(112);
-    glob::espAtCmdWrapper.begin();
+    glob::espAtCmdWrapper.goToConnectedState();
 }
