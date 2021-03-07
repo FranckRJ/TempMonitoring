@@ -78,6 +78,7 @@ void setup()
 
 void loop()
 {
+    const auto loopStartTime = millis();
     const float temp = getTemp(2);
 
     if (isnan(temp))
@@ -99,7 +100,8 @@ void loop()
                     continue;
                 }
 
-                const auto delay = static_cast<int32_t>(pauseSecEstimateOfRealDuration * glob::tempBuffer.size());
+                const auto delay = static_cast<int32_t>((pauseSecEstimateOfRealDuration * glob::tempBuffer.size())
+                                                        + (500 + millis() - loopStartTime) / 1000);
 
                 if (sendTempRequestToEsp(oldTemp, delay))
                 {
