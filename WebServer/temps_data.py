@@ -52,5 +52,4 @@ class TempsData:
         time_compare = time_compare[time_compare.right - time_compare.left > dt.timedelta(minutes=20)]
         time_compare = time_compare.left + (time_compare.right - time_compare.left) / 2
         new_values = pd.DataFrame({"timestamp": time_compare, "value": None})
-        temp_measures.append(new_values).sort_values("timestamp", inplace=True)
-        return temp_measures
+        return temp_measures.append(new_values).sort_values("timestamp")
