@@ -45,10 +45,12 @@ class TempsData:
 
     @staticmethod
     def __add_nan_to_holes_in_measure(temp_measures: pd.DataFrame) -> pd.DataFrame:
+        temp_measures.sort_values("timestamp", inplace=True)
         time_compare = pd.DataFrame({"left": temp_measures.timestamp,
                                      "right": temp_measures.timestamp.shift(-1)})
         time_compare = time_compare.iloc[:-1]
         time_compare = time_compare[time_compare.right - time_compare.left > dt.timedelta(minutes=20)]
         time_compare = time_compare.left + (time_compare.right - time_compare.left) / 2
         new_values = pd.DataFrame({"timestamp": time_compare, "value": None})
-        return temp_measures.append(new_values).sort_values("timestamp")
+        temp_measures.append(new_values).sort_values("timestamp", inplace=True)
+        return temp_measures
