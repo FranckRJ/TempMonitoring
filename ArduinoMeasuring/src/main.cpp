@@ -54,6 +54,12 @@ bool sendTempRequestToEsp(float temp, int32_t delay = -1)
     return glob::espAtCmdWrapper.sendRequest(request, Conf::connectionHost, Conf::connectionPort);
 }
 
+template <class T>
+auto roundMsToS(T ms)
+{
+    return (ms + 500) / 1'000;
+}
+
 void setup()
 {
     pinMode(LED_BUILTIN, OUTPUT);
@@ -87,9 +93,8 @@ void loop()
                     continue;
                 }
 
-                const auto delay
-                    = static_cast<int32_t>((loopCycleDurationMs * glob::tempBuffer.size())
-                                           + (500 + glob::loopScheduler.currentLoopCycleDuration()) / 1'000);
+                const auto delay = static_cast<int32_t>((roundMsToS(loopCycleDurationMs) * glob::tempBuffer.size())
+                                                        + roundMsToS(glob::loopScheduler.currentLoopCycleDurationMs()));
 
                 if (sendTempRequestToEsp(oldTemp, delay))
                 {

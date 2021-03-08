@@ -28,7 +28,7 @@ void LoopScheduler::init()
     _loopCycleStartTimeMs = millis();
 }
 
-LoopScheduler::TimeType LoopScheduler::currentLoopCycleDuration() const
+LoopScheduler::TimeType LoopScheduler::currentLoopCycleDurationMs() const
 {
     return millis() - _loopCycleStartTimeMs;
 }

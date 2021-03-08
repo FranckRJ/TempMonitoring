@@ -13,7 +13,7 @@ public:
 
     void init();
 
-    [[nodiscard]] TimeType currentLoopCycleDuration() const;
+    [[nodiscard]] TimeType currentLoopCycleDurationMs() const;
 
     void waitForEndOfLoopCycle();
 
