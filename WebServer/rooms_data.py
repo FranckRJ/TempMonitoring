@@ -8,6 +8,7 @@ from db_access import DbAccess
 class Room:
     id: int
     name: str
+    password: str
 
 
 class RoomsData:
@@ -18,23 +19,23 @@ class RoomsData:
         with self.__db_access.open_db_conn() as conn:
             curs = conn.cursor()
 
-            curs.execute("SELECT id, name FROM rooms")
+            curs.execute("SELECT id, name, password FROM rooms")
 
-            return [Room(id=resp[0], name=resp[1]) for resp in curs.fetchall()]
+            return [Room(id=resp[0], name=resp[1], password=resp[2]) for resp in curs.fetchall()]
 
     def get_user_rooms(self, user_id: int) -> List[Room]:
         with self.__db_access.open_db_conn() as conn:
             curs = conn.cursor()
 
-            curs.execute("SELECT id, name FROM rooms WHERE user_id = ?", (user_id,))
+            curs.execute("SELECT id, name, password FROM rooms WHERE user_id = ?", (user_id,))
 
-            return [Room(id=resp[0], name=resp[1]) for resp in curs.fetchall()]
+            return [Room(id=resp[0], name=resp[1], password=resp[2]) for resp in curs.fetchall()]
 
     def get_room(self, room_id: int) -> Room:
         with self.__db_access.open_db_conn() as conn:
             curs = conn.cursor()
 
-            curs.execute("SELECT id, name FROM rooms WHERE id = ?", (room_id,))
+            curs.execute("SELECT id, name, password FROM rooms WHERE id = ?", (room_id,))
             resp = curs.fetchone()
 
-            return Room(id=resp[0], name=resp[1])
+            return Room(id=resp[0], name=resp[1], password=resp[2])
